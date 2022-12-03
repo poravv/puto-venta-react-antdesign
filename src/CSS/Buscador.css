@@ -1,0 +1,36 @@
+.sugerencia {
+  padding: 5px;
+}
+
+
+.react-autosuggest__suggestions-container--open {
+  display: block;
+  color: white;
+  background-color: black;
+  font-size: 14px;
+  z-index: 2;
+  max-height: 300px;
+  left: 0px;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.react-autosuggest__suggestions-list {
+  list-style: none;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  cursor: pointer;
+}
+
+.react-autosuggest__input {
+  min-width: 350px;
+  height: 35px;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
+.react-autosuggest__suggestion--highlighted {
+  background-color: #ddd;
+  color: black;
+}
