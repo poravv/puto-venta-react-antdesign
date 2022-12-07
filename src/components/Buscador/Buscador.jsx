@@ -10,7 +10,7 @@ function Buscador({ data, label, value,dataIndex,title, onChange, onSearch }) {
             <Select
                 showSearch
                 allowClear
-                placeholder="Select proveedor"
+                placeholder={`Select ${title}`}
                 optionFilterProp="children"
                 onChange={onChange}
                 onSearch={onSearch}
@@ -23,6 +23,7 @@ function Buscador({ data, label, value,dataIndex,title, onChange, onSearch }) {
                     options: data
                 }}
                 options={data}
+                
             />
         </Form.Item>
     );

@@ -11,7 +11,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-const UploadFile = ({previewImage,setPreviewImage}) => {
+const UploadFile = ({ previewImage, setPreviewImage }) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewTitle, setPreviewTitle] = useState('');
     const [fileList, setFileList] = useState([]);
@@ -26,7 +26,7 @@ const UploadFile = ({previewImage,setPreviewImage}) => {
     };
 
 
-    const handleChange = async ({ fileList: newFileList,file }) => {
+    const handleChange = async ({ fileList: newFileList, file }) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
@@ -37,9 +37,9 @@ const UploadFile = ({previewImage,setPreviewImage}) => {
 
 
     const uploadButton = (
-        <div>
+        <div >
             <PlusOutlined />
-            <div style={{marginTop: 8,}} >
+            <div style={{ marginTop: 0, }} >
                 Upload
             </div>
         </div>
@@ -48,17 +48,19 @@ const UploadFile = ({previewImage,setPreviewImage}) => {
 
     return (
         <>
-        
+
             <ImgCrop rotate>
-                <Upload
-                    action=""
-                    listType="picture-card"
-                    fileList={fileList}
-                    onPreview={handlePreview}
-                    onChange={handleChange}
-                >
-                    {fileList.length >= 1 ? null : uploadButton}
-                </Upload>
+                
+                    <Upload
+                        action=""
+                        listType="picture-card"
+                        fileList={fileList}
+                        onPreview={handlePreview}
+                        onChange={handleChange}
+                    >
+                        {fileList.length >= 1 ? null : uploadButton}
+                    </Upload>
+                
             </ImgCrop>
             <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
                 <Image

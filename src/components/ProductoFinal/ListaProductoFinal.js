@@ -4,7 +4,7 @@ import { Logout } from '../Utils/Logout';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { Popconfirm, Typography } from 'antd';
 import { Form, Image } from 'antd';
-import TableModel from '../TableModel/TableModel';
+import TableModelExpand from '../TableModel/TableModelExpand';
 import { Tag } from 'antd';
 import { message } from 'antd';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
@@ -16,11 +16,13 @@ import { Buffer } from 'buffer'
 
 
 const URI = 'http://186.158.152.141:3001/sisweb/api/producto_final/';
+const URIARTICULO = 'http://186.158.152.141:3001/sisweb/api/producto/';
 let fechaActual = new Date();
 const ListaArticulos = ({ token }) => {
 
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
+    const [lstArticulos, setLstArticulos] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const strFecha = fechaActual.getFullYear() + "-" + (fechaActual.getMonth() + 1) + "-" + fechaActual.getDate();
     //---------------------------------------------------
@@ -30,10 +32,9 @@ const ListaArticulos = ({ token }) => {
     const searchInput = useRef(null);
     const navigate = useNavigate();
     //---------------------------------------------------
-
-
     useEffect(() => {
         getProductoFinal();
+        getArticulos();
         // eslint-disable-next-line
     }, []);
 
@@ -44,23 +45,55 @@ const ListaArticulos = ({ token }) => {
         }
     };
 
+    const getArticulos = async () => {
+        const res = await axios.get(`${URIARTICULO}/get`, config)
+        setLstArticulos(res.data.body);
+    }
+
     const getProductoFinal = async () => {
         const res = await axios.get(`${URI}/get`, config)
         /*En caso de que de error en el server direcciona a login*/
         if (res.data.error) {
             Logout();
         }
-        const resDataId = [];
+        /*const resDataId = [
+            {
+                idproducto_final:1,
+                estado:'AC',
+                nombre:'prueba',
+                descripcion:'prueba',
+                children: [
+                    {
+                        idproducto_final:2,
+                        producto:'prueba',
+                        estado:'AC'
+                    }
+                ]
+            }
+        ];*/
 
-        res.data.body.map((rs) => {
-            //rs.key = rs.idproducto_final;
-            //rs.razon_social= rs.proveedor.razon_social;
-            //rs.ruc= rs.proveedor.ruc;
-            resDataId.push(rs);
-            return true;
-        })
-        //console.log(resDataId);
-        setData(resDataId);
+        /*
+        
+         res.data.body.map((rs,index) => {
+             //console.log('rs:',rs)
+             //rs.razon_social= rs.proveedor.razon_social;
+             //rs.ruc= rs.proveedor.ruc;
+             rs.key = rs.idproducto_final;
+             rs.children = [
+                 {
+                     key:index+1,
+                     descripcion:'hola' 
+                 }
+                 
+             ];
+ 
+             resDataId.push(rs);
+             return true;
+         })
+         console.log('rsData: ',resDataId);
+         
+         */
+        setData(res.data.body);
     }
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -158,16 +191,15 @@ const ListaArticulos = ({ token }) => {
     });
 
 
+    const deleteProducto = async (id) => {
+        await axios.put(`${URI}/inactiva/${id}`, {}, config);
+        getProductoFinal();
+    }
 
     const handleExport = () => {
         var wb = XLSX.utils.book_new(), ws = XLSX.utils.json_to_sheet(data);
         XLSX.utils.book_append_sheet(wb, ws, 'Articulos');
         XLSX.writeFile(wb, 'Articulos.xlsx')
-    }
-
-    const deleteProductoFinal = async (id) => {
-        await axios.delete(`${URI}/del/${id}`, config)
-        getProductoFinal();
     }
 
     const updateProductoFinal = async (newData) => {
@@ -183,7 +215,7 @@ const ListaArticulos = ({ token }) => {
         {
             title: 'id',
             dataIndex: 'idproducto_final',
-            width: '5%',
+            width: '7%',
             editable: false,
             ...getColumnSearchProps('idproducto_final'),
         },
@@ -206,7 +238,7 @@ const ListaArticulos = ({ token }) => {
             width: '8%',
             editable: true,
             render: (_, { img }) => {
-                if (img&&typeof img !=="string") {
+                if (img && typeof img !== "string") {
                     //console.log(typeof img);
                     const asciiTraducido = Buffer.from(img.data).toString('ascii');
                     //console.log(asciiTraducido);
@@ -223,11 +255,9 @@ const ListaArticulos = ({ token }) => {
                     } else {
                         return null
                     }
-
                 } else {
                     return null
                 }
-
             },
         },
         {
@@ -269,11 +299,9 @@ const ListaArticulos = ({ token }) => {
                     </span>
                 ) : (
                     <>
-
                         <Typography.Link style={{ margin: `5px` }} disabled={editingKey !== ''} onClick={() => edit(record)}>
                             Editar
                         </Typography.Link>
-
                         <Popconfirm
                             title="Desea eliminar este registro?"
                             onConfirm={() => confirmDel(record.idproducto_final)}
@@ -284,12 +312,51 @@ const ListaArticulos = ({ token }) => {
                                 Borrar
                             </Typography.Link>
                         </Popconfirm>
-
                     </>
                 );
             },
         }
-    ]
+    ];
+
+    const columnDet = [
+        {
+            title: 'idproducto',
+            dataIndex: 'idproducto',
+            key: 'idproducto',
+            width: '2%',
+        },
+        {
+            title: 'Producto',
+            dataIndex: 'idproducto',
+            key: 'idproducto',
+            width: '2%',
+            render: (idproducto) => {
+                const articulo = lstArticulos.filter((inv) => inv.idproducto === idproducto);
+                //console.log(articulo[0].descripcion);
+                return (
+                    <Tag color={'blue'} key={idproducto} >
+                        { articulo[0].descripcion}
+                    </Tag>
+                );
+            },
+        },
+        {
+            title: 'Estado',
+            dataIndex: 'receta_estado',
+            key: 'receta_estado',
+            width: '2%',
+        },
+        {
+            title: 'Action',
+            dataIndex: 'operation',
+            key: 'operation',
+            width: '5%',
+            render: () => (
+                null
+            ),
+        },
+    ];
+
 
     const edit = (record) => {
         form.setFieldsValue({
@@ -307,7 +374,8 @@ const ListaArticulos = ({ token }) => {
 
     const confirmDel = (idproducto_final) => {
         message.success('Procesando');
-        deleteProductoFinal(idproducto_final);
+        //deleteProductoFinal(idproducto_final);
+        deleteProducto(idproducto_final)
     };
 
     const save = async (idproducto_final, record) => {
@@ -376,8 +444,8 @@ const ListaArticulos = ({ token }) => {
             <div style={{ marginBottom: `5px`, textAlign: `end` }}>
                 <Button type="primary" onClick={() => navigate('/crearproducto')} >{<PlusOutlined />} Nuevo</Button>
             </div>
-            <TableModel token={token} mergedColumns={mergedColumns} data={data} form={form} keyExtraido={'idproducto_final'} />
+            <TableModelExpand columnDet={columnDet} keyDet={'idproducto'} token={token} mergedColumns={mergedColumns} data={data} form={form} keyExtraido={'idproducto_final'} />
         </>
     )
 }
-export default ListaArticulos
+export default ListaArticulos;

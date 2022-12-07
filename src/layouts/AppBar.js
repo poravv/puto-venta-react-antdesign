@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    DesktopOutlined,
+    //DesktopOutlined,
     FileOutlined,
     HomeOutlined,
     TeamOutlined,
@@ -40,7 +40,7 @@ const AppBar = ({ usuario }) => {
 
     const items = [
         getItem(() => navegacion('/'), 'Home', '1', <HomeOutlined />),
-        getItem(() => navegacion('/tablemodel'), 'Option 2', '2', <DesktopOutlined />),
+        //getItem(() => navegacion('/tablemodel'), 'Option 2', '2', <DesktopOutlined />),
         getItem(null, 'Mantenimiento', 'sub1', <ToolOutlined />, [
             getItem(() => navegacion('/proveedor'), 'Proveedor', '3'),
             getItem(() => navegacion('/articulo'), 'Articulos', '4'),

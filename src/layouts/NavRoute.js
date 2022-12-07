@@ -7,8 +7,6 @@ import ListaProveedor from '../components/Proveedor/ListaProveedor';
 import ListaInventario from '../components/Inventario/ListaInventario';
 import ListaDetInventario from '../components/Inventario/ListaDetInventario';
 import CrearInventario from '../components/Inventario/CrearInventario';
-import ListaProductoFinal1 from '../components/ProductoFinal1/ListaProductoFinal1';
-import CrearProductoFinal1 from '../components/ProductoFinal1/CrearProductoFinal1';
 import ListaProductoFinal from '../components/ProductoFinal/ListaProductoFinal';
 import NuevoProductoFinal from '../components/ProductoFinal/NuevoProductoFinal';
 import ListaCliente from '../components/Clientes/ListaClientes';
@@ -42,8 +40,6 @@ function NavRoute({ usuario }) {
                   <Route path='/producto' element={<ListaProductoFinal token={usuario.token} />} />
                   <Route path='/crearproducto' element={<NuevoProductoFinal token={usuario.token} />} />
 
-                  <Route path='/producto1' element={<ListaProductoFinal1 token={usuario.token} />} />
-                  <Route path='/crearproducto1' element={<CrearProductoFinal1 token={usuario.token} />} />
                   <Route path='*' element={<Navigate replace to='/' />} />
                   
 

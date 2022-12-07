@@ -243,9 +243,7 @@ const ListaArticulos = ({ token }) => {
             title: 'Accion',
             dataIndex: 'operacion',
             render: (_, record) => {
-
                 const editable = isEditing(record);
-
                 return editable ? (
                     <span>
                         <Typography.Link
@@ -262,7 +260,6 @@ const ListaArticulos = ({ token }) => {
                     </span>
                 ) : (
                     <>
-
                         <Typography.Link style={{ margin: `5px` }} disabled={editingKey !== ''} onClick={() => edit(record)}>
                             Editar
                         </Typography.Link>
@@ -277,7 +274,6 @@ const ListaArticulos = ({ token }) => {
                                 Borrar
                             </Typography.Link>
                         </Popconfirm>
-
                     </>
                 );
             },
