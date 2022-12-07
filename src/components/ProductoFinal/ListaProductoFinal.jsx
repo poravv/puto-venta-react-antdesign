@@ -18,7 +18,7 @@ import { Buffer } from 'buffer'
 const URI = 'http://186.158.152.141:3001/sisweb/api/producto_final/';
 const URIARTICULO = 'http://186.158.152.141:3001/sisweb/api/producto/';
 let fechaActual = new Date();
-const ListaArticulos = ({ token }) => {
+const ListaProductoFinal = ({ token }) => {
 
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
@@ -448,4 +448,4 @@ const ListaArticulos = ({ token }) => {
         </>
     )
 }
-export default ListaArticulos;
+export default ListaProductoFinal;

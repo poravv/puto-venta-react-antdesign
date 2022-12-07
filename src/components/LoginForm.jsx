@@ -16,9 +16,6 @@ function LoginForm() {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null);
-    //const navigate = useNavigate();
-
-
 
     const handleLoginSubmit = async () => {
         //event.preventDefault();
