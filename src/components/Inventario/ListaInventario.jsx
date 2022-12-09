@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from 'axios'
 import { useState, useEffect, useRef } from 'react'
 import { Logout } from '../Utils/Logout';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { Popconfirm, Typography } from 'antd';
 import { Form } from 'antd';
-import TableModel from '../TableModel/TableModel';
+import TableModelExpand from '../TableModel/TableModelExpand';
 import { Tag } from 'antd';
 import { message } from 'antd';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
@@ -13,13 +13,14 @@ import Highlighter from 'react-highlight-words';
 import { useNavigate } from "react-router-dom";
 import { RiFileExcel2Line, RiFilePdfFill } from "react-icons/ri";
 
-const URI = 'http://186.158.152.141:3001/sisweb/api/cliente/';
+
+const URI = 'http://186.158.152.141:3001/sisweb/api/inventario';
 let fechaActual = new Date();
-const ListaClientes = ({ token }) => {
+const ListaInventario = ({ token }) => {
 
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
-
+    //const [lstProducto, setLstProducto] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const strFecha = fechaActual.getFullYear() + "-" + (fechaActual.getMonth() + 1) + "-" + fechaActual.getDate();
     //---------------------------------------------------
@@ -30,7 +31,8 @@ const ListaClientes = ({ token }) => {
     const navigate = useNavigate();
     //---------------------------------------------------
     useEffect(() => {
-        getCliente();
+        getInventario();
+        //getDetInventario();
         // eslint-disable-next-line
     }, []);
 
@@ -41,12 +43,21 @@ const ListaClientes = ({ token }) => {
         }
     };
 
-    const getCliente = async () => {
+   /*
+    const getDetInventario = async () => {
+        const res = await axios.get(`${URIDETINV}/get`, config)
+        console.log('detalle: ',res.data.body);;
+        setLstProducto(res.data.body);
+    }
+   */
+
+    const getInventario = async () => {
         const res = await axios.get(`${URI}/get`, config)
         /*En caso de que de error en el server direcciona a login*/
         if (res.data.error) {
             Logout();
         }
+        //console.log(res.data.body);
         setData(res.data.body);
     }
 
@@ -147,119 +158,62 @@ const ListaClientes = ({ token }) => {
 
     const deleteProducto = async (id) => {
         await axios.put(`${URI}/inactiva/${id}`, {}, config);
-        getCliente();
+        getInventario();
     }
 
     const handleExport = () => {
         var wb = XLSX.utils.book_new(), ws = XLSX.utils.json_to_sheet(data);
-        XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
-        XLSX.writeFile(wb, 'Clientes.xlsx')
+        XLSX.utils.book_append_sheet(wb, ws, 'Producto');
+        XLSX.writeFile(wb, 'Producto.xlsx')
     }
 
-    const updateCliente = async (newData) => {
+    const updateInventario = async (newData) => {
         //console.log('Entra en update');
         //console.log(newData)
-        await axios.put(URI + "put/" + newData.idcliente, newData, config
+        await axios.put(URI + "put/" + newData.idinventario, newData, config
         );
-        getCliente();
+        getInventario();
     }
 
 
     const columns = [
         {
             title: 'id',
-            dataIndex: 'idcliente',
-            width: '5%',
+            dataIndex: 'idinventario',
+            width: '7%',
             editable: false,
+            ...getColumnSearchProps('idinventario'),
         },
         {
-            title: 'Cliente',
-            dataIndex: 'razon_social',
-            //width: '22%',
+            title: 'Producto',
+            dataIndex: 'producto',
+            width: '22%',
             editable: true,
-            ...getColumnSearchProps('razon_social'),
-        },
-        {
-            title: 'Ruc',
-            dataIndex: 'ruc',
-            //width: '22%',
-            editable: true,
-            ...getColumnSearchProps('ruc'),
-        },
-        {
-            title: 'Telefono',
-            dataIndex: 'telefono',
-            //width: '5%',
-            editable: true,
-        },
-        {
-            title: 'Correo',
-            dataIndex: 'correo',
-            //width: '12%',
-            editable: true,
-        },
-        {
-            title: 'Direccion',
-            dataIndex: 'direccion',
-            //width: '10%',
-            editable: true,
-        },
-        {
-            title: 'Ciudad',
-            dataIndex: 'idciudad',
-            //  width: '15%',
-            editable: true,
-            render: (_, { ciudad }) => {
+            render: (_, { producto }) => {
+                //console.log(producto);
                 return (
-                    ciudad.descripcion
+                    producto.descripcion
                 );
             },
+            //...getColumnSearchProps('producto'),
         },
         {
-            title: 'Tipo',
-            dataIndex: 'tipo_cli',
-            //  width: '15%',
-            editable: true,
-            render: (_, { tipo_cli }) => {
-                if(tipo_cli){
-                    return (
-                        tipo_cli === 'F' ? 'Fisico' : 'Juridico'
-                );
-                }else{
-                    return (
-                        null
-                );
-                }
-            },
-        },
-        {
-            title: 'Sexo',
-            dataIndex: 'sexo',
-            //  width: '15%',
-            editable: true,
-            render: (_, { sexo }) => {
-                if(sexo){
-                    return (
-                        sexo === 'MA' ? 'Masculino' : 'Femenino'
-                );
-                }else{
-                    return (
-                        null
-                );
-                }
-            },
+            title: 'Canridad',
+            dataIndex: 'cantidad_total',
+            width: '12%',
+            //editable: true,
         },
         {
             title: 'Estado',
             dataIndex: 'estado',
-            //width: '10%',
+            width: '10%',
             editable: true,
-            render: (_, { estado, idcliente }) => {
+            render: (_, { estado, idinventario }) => {
                 let color = 'black';
                 if (estado.toUpperCase() === 'AC') { color = 'green' }
                 else { color = 'volcano'; }
                 return (
-                    <Tag color={color} key={idcliente} >
+                    <Tag color={color} key={idinventario} >
                         {estado.toUpperCase() === 'AC' ? 'Activo' : 'Inactivo'}
                     </Tag>
                 );
@@ -275,7 +229,7 @@ const ListaClientes = ({ token }) => {
                 return editable ? (
                     <span>
                         <Typography.Link
-                            onClick={() => save(record.idcliente, record)}
+                            onClick={() => save(record.idinventario, record)}
                             style={{
                                 marginRight: 8,
                             }} >
@@ -293,7 +247,7 @@ const ListaClientes = ({ token }) => {
                         </Typography.Link>
                         <Popconfirm
                             title="Desea eliminar este registro?"
-                            onConfirm={() => confirmDel(record.idcliente)}
+                            onConfirm={() => confirmDel(record.idinventario)}
                             onCancel={cancel}
                             okText="Yes"
                             cancelText="No" >
@@ -307,33 +261,74 @@ const ListaClientes = ({ token }) => {
         }
     ];
 
+    const columnDet = [
+        {
+            title: 'iddetalle',
+            dataIndex: 'iddet_inventario',
+            key: 'iddet_inventario',
+            width: '2%',
+        },
+        {
+            title: 'Cantidad',
+            dataIndex: 'cantidad',
+            key: 'cantidad',
+            width: '2%',
+        },
+        {
+            title: 'Estado',
+            dataIndex: 'estado',
+            key: 'estado',
+            width: '2%',
+            render: (_, { estado, idinventario }) => {
+                let color = 'black';
+                if (estado.toUpperCase() === 'AC') { color = 'blue' }
+                else { color = 'volcano'; }
+                return (
+                    <Tag color={color} key={idinventario} >
+                        {estado.toUpperCase() === 'AC' ? 'Activo' : 'Inactivo'}
+                    </Tag>
+                );
+            },
+        },
+        {
+            title: 'Action',
+            dataIndex: 'operation',
+            key: 'operation',
+            width: '5%',
+            render: () => (
+                null
+            ),
+        },
+    ];
+
+
     const edit = (record) => {
         form.setFieldsValue({
             ...record,
         });
-        setEditingKey(record.idcliente);
+        setEditingKey(record.idinventario);
     };
 
 
-    const isEditing = (record) => record.idcliente === editingKey;
+    const isEditing = (record) => record.idinventario === editingKey;
 
     const cancel = () => {
         setEditingKey('');
     };
 
-    const confirmDel = (idcliente) => {
+    const confirmDel = (idinventario) => {
         message.success('Procesando');
-        //deleteCliente(idcliente);
-        deleteProducto(idcliente)
+        //deleteInventario(idinventario);
+        deleteProducto(idinventario)
     };
 
-    const save = async (idcliente, record) => {
+    const save = async (idinventario, record) => {
         //console.log('record:  ',record.img.length);
-        //console.log(idcliente);
+        //console.log(idinventario);
         try {
             const row = await form.validateFields();
             const newData = [...data];
-            const index = newData.findIndex((item) => idcliente === item.idcliente);
+            const index = newData.findIndex((item) => idinventario === item.idinventario);
 
             if (index > -1) {
                 const item = newData[index];
@@ -344,7 +339,7 @@ const ListaClientes = ({ token }) => {
                     ...row,
                 });
 
-                if (record.idcliente === item.idcliente) {
+                if (record.idinventario === item.idinventario) {
                     //console.log('Entra en asignacion',record.img);
                     newData[index].img = record.img;
                 }
@@ -353,7 +348,7 @@ const ListaClientes = ({ token }) => {
 
                 //console.log(newData);
 
-                updateCliente(newData[index]);
+                updateInventario(newData[index]);
                 setData(newData);
                 setEditingKey('');
                 message.success('Registro actualizado');
@@ -387,14 +382,14 @@ const ListaClientes = ({ token }) => {
 
     return (
         <>
-            <h3>Clientes</h3>
+            <h3>Inventario</h3>
             <Button type='primary' style={{ backgroundColor: `#08AF17`, margin: `2px` }}  ><RiFileExcel2Line onClick={handleExport} size={20} /></Button>
             <Button type='primary' style={{ backgroundColor: `#E94325`, margin: `2px` }}  ><RiFilePdfFill size={20} /></Button>
             <div style={{ marginBottom: `5px`, textAlign: `end` }}>
-                <Button type="primary" onClick={() => navigate('/crearcliente')} >{<PlusOutlined />} Nuevo</Button>
+                <Button type="primary" onClick={() => navigate('/crearproducto')} >{<PlusOutlined />} Cargar</Button>
             </div>
-            <TableModel token={token} mergedColumns={mergedColumns} data={data} form={form} keyExtraido={'idcliente'} />
+            <TableModelExpand columnDet={columnDet} keyDet={'iddet_inventario'} token={token} mergedColumns={mergedColumns} data={data} form={form} keyExtraido={'idinventario'} />
         </>
     )
 }
-export default ListaClientes;
+export default ListaInventario;

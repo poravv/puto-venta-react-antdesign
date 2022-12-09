@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import React from 'react';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input,message } from 'antd';
 import Buscador from '../Buscador/Buscador';
 
 const URI = 'http://186.158.152.141:3001/sisweb/api/producto/';
@@ -59,8 +59,15 @@ function NuevoArticulo({ token, idusuario }) {
             estado: "AC",
             //img: previewImage
         }, config
-        );
+        ).then((rs) => {
+            if (rs.data.error) {
+                message.error('Error en la creacion de articulo');
+                return null;
+            }
+            navigate('/articulo');
+        });
         navigate('/articulo');
+        message.success('Registro almacenado');
     }
 
     const btnCancelar = (e) => {
@@ -99,7 +106,7 @@ function NuevoArticulo({ token, idusuario }) {
                     <Input type='number' placeholder='Precio' value={precio} onChange={(e) => setPrecio(e.target.value)} />
                 </Form.Item>
 
-                <Buscador label={'razon_social'} value={'idproveedor'} data={proveedores} onChange={onChange} onSearch={onSearch} />
+                <Buscador title={'Proveedor'} label={'razon_social'} value={'idproveedor'} data={proveedores} onChange={onChange} onSearch={onSearch} />
 
                 <Form.Item
                     style={{ margin: `20px` }}>

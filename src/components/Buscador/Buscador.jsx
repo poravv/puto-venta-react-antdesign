@@ -15,7 +15,9 @@ function Buscador({ data, label, value,dataIndex,title, onChange, onSearch }) {
                 onChange={onChange}
                 onSearch={onSearch}
                 filterOption={(input, option) =>
-                    (option?.razon_social ?? '').toLowerCase().includes(input.toLowerCase())
+                    (option?.razon_social ??
+                        option?.descripcion??
+                        option?.nombre ?? '').toLowerCase().includes(input.toLowerCase())
                 }
                 fieldNames={{
                     label: label,

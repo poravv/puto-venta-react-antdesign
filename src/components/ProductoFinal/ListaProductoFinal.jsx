@@ -22,7 +22,7 @@ const ListaProductoFinal = ({ token }) => {
 
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
-    const [lstArticulos, setLstArticulos] = useState([]);
+    const [lstProducto, setLstProducto] = useState([]);
     const [editingKey, setEditingKey] = useState('');
     const strFecha = fechaActual.getFullYear() + "-" + (fechaActual.getMonth() + 1) + "-" + fechaActual.getDate();
     //---------------------------------------------------
@@ -34,7 +34,7 @@ const ListaProductoFinal = ({ token }) => {
     //---------------------------------------------------
     useEffect(() => {
         getProductoFinal();
-        getArticulos();
+        getProducto();
         // eslint-disable-next-line
     }, []);
 
@@ -45,9 +45,9 @@ const ListaProductoFinal = ({ token }) => {
         }
     };
 
-    const getArticulos = async () => {
+    const getProducto = async () => {
         const res = await axios.get(`${URIARTICULO}/get`, config)
-        setLstArticulos(res.data.body);
+        setLstProducto(res.data.body);
     }
 
     const getProductoFinal = async () => {
@@ -198,8 +198,8 @@ const ListaProductoFinal = ({ token }) => {
 
     const handleExport = () => {
         var wb = XLSX.utils.book_new(), ws = XLSX.utils.json_to_sheet(data);
-        XLSX.utils.book_append_sheet(wb, ws, 'Articulos');
-        XLSX.writeFile(wb, 'Articulos.xlsx')
+        XLSX.utils.book_append_sheet(wb, ws, 'Producto');
+        XLSX.writeFile(wb, 'Producto.xlsx')
     }
 
     const updateProductoFinal = async (newData) => {
@@ -331,7 +331,7 @@ const ListaProductoFinal = ({ token }) => {
             key: 'idproducto',
             width: '2%',
             render: (idproducto) => {
-                const articulo = lstArticulos.filter((inv) => inv.idproducto === idproducto);
+                const articulo = lstProducto.filter((inv) => inv.idproducto === idproducto);
                 //console.log(articulo[0].descripcion);
                 return (
                     <Tag color={'blue'} key={idproducto} >
@@ -345,6 +345,16 @@ const ListaProductoFinal = ({ token }) => {
             dataIndex: 'receta_estado',
             key: 'receta_estado',
             width: '2%',
+            render: (_, { estado, idproducto_final }) => {
+                let color = 'black';
+                if (estado.toUpperCase() === 'AC') { color = 'green' }
+                else { color = 'volcano'; }
+                return (
+                    <Tag color={color} key={idproducto_final} >
+                        {estado.toUpperCase() === 'AC' ? 'Activo' : 'Inactivo'}
+                    </Tag>
+                );
+            },
         },
         {
             title: 'Action',
@@ -438,7 +448,7 @@ const ListaProductoFinal = ({ token }) => {
 
     return (
         <>
-            <h3>Articulos</h3>
+            <h3>Producto</h3>
             <Button type='primary' style={{ backgroundColor: `#08AF17`, margin: `2px` }}  ><RiFileExcel2Line onClick={handleExport} size={20} /></Button>
             <Button type='primary' style={{ backgroundColor: `#E94325`, margin: `2px` }}  ><RiFilePdfFill size={20} /></Button>
             <div style={{ marginBottom: `5px`, textAlign: `end` }}>

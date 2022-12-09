@@ -47,8 +47,8 @@ const AppBar = ({ usuario }) => {
             getItem(() => navegacion('/producto'), 'Productos', '5'),
         ]),
         getItem(null, 'Team', 'sub2', <TeamOutlined />, [
-            getItem(() => navegacion('7'), 'Team 1', '6'),
-            getItem(() => navegacion('8'), 'Team 2', '8')]),
+            getItem(() => navegacion('/cliente'), 'Clientes', '6'),
+            getItem(() => navegacion('/inventario'), 'Inventario', '8')]),
         getItem(() => navegacion('/buscar'), 'Buscar', '9', <FileOutlined />),
         getItem(() => Logout(), 'Close session', '10', <LogoutOutlined />)
     ];

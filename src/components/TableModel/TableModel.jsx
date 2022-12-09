@@ -7,7 +7,8 @@ import UploadFile from '../Utils/Upload';
 import { Buffer } from 'buffer'
 
 const { Option } = Select;
-const URI = 'http://186.158.152.141:3001/sisweb/api/proveedor/';
+const URIPROV = 'http://186.158.152.141:3001/sisweb/api/proveedor/';
+const URICIUDAD = 'http://186.158.152.141:3001/sisweb/api/ciudad/';
 
 function TableModel({ token, form, data, mergedColumns, keyExtraido }) {
 
@@ -17,9 +18,11 @@ function TableModel({ token, form, data, mergedColumns, keyExtraido }) {
 
     const [previewImage, setPreviewImage] = useState('');
     const [proveedores, setProveedores] = useState([]);
+    const [ciudades, setCiudades] = useState([]);
 
     useEffect(() => {
       getProveedor();
+      getCiudad();
       // eslint-disable-next-line
     }, []);
 
@@ -31,8 +34,13 @@ function TableModel({ token, form, data, mergedColumns, keyExtraido }) {
     };
 
     const getProveedor = async () => {
-      const res = await axios.get(`${URI}/get`, config);
+      const res = await axios.get(`${URIPROV}/get`, config);
       setProveedores(res.data.body);
+    }
+
+    const getCiudad = async () => {
+      const res = await axios.get(`${URICIUDAD}/get`, config);
+      setCiudades(res.data.body);
     }
 
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
@@ -49,13 +57,46 @@ function TableModel({ token, form, data, mergedColumns, keyExtraido }) {
               ) : (children)
             }
           </td>);
+      case 'tipo_cli':
+        return (
+          <td {...restProps}>
+            {
+              editing ? (
+                <Form.Item name={dataIndex} style={{ margin: 0, }} rules={[{ required: true, message: `Por favor complete ${title}!`, },]} >
+                  <Select allowClear > <Option value="F">Fisico</Option> <Option value="J">Juridico</Option> </Select>
+                </Form.Item>
+              ) : (children)
+            }
+          </td>);
+      case 'sexo':
+            return (
+              <td {...restProps}>
+                {
+                  editing ? (
+                    <Form.Item name={dataIndex} style={{ margin: 0, }} rules={[{ required: true, message: `Por favor complete ${title}!`, },]} >
+                      <Select allowClear > <Option value="MA">Masculino</Option> <Option value="FE">Femenino</Option> </Select>
+                    </Form.Item>
+                  ) : (children)
+                }
+              </td>);
       //break;
+      //Proveedor
       case 'idproveedor':
         return (
           <td {...restProps}>
             {
               editing ?
                 <Buscador label={'razon_social'} value={'idproveedor'} data={proveedores} dataIndex={dataIndex} title={title} />
+                : (children)
+            }
+          </td>);
+      //Ciudad
+      case 'idciudad':
+        return (
+          <td {...restProps}>
+            {
+              editing ?
+                <Buscador label={'descripcion'} value={'idciudad'} data={ciudades} dataIndex={dataIndex} title={title} />
                 : (children)
             }
           </td>);

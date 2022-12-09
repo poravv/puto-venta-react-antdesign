@@ -4,15 +4,13 @@ import '../CSS/LoginForm.css'
 import LoginServices from '../services/Login'
 import '../CSS/Cuerpo.css'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Layout, Typography } from 'antd';
+import { Button, Form, Input, Layout, Typography, message } from 'antd';
 
-const { Text } = Typography;
-
+//const { Text } = Typography;
 const { Content } = Layout;
 
 function LoginForm() {
     //poravv-andres
-    const [errorMensaje, setErrorMensaje] = useState(null);
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null);
@@ -37,79 +35,79 @@ function LoginForm() {
             //navigate('/');
 
         } catch (e) {
-            console.log(e);
-            setErrorMensaje('Error de usuario o contraseña');
-            setTimeout(() => {
-                setErrorMensaje(null);
-            }, 5000);
+            //console.log(e);
+            message.warning('Error de usuario o contraseña');
         }
     }
 
     return (
 
         <>
-        
-        <Content style={{
-            margin: '0 16px',
-            //background:`green`,
-            display: `flex`,
-            alignItems: `center`,
-            textAlign: `center`,
-            justifyContent: `center`,
-        }}
-        >
-            <Form
-                name="normal_login"
-                className="login-form"
-                initialValues={{
-                    remember: true,
+            <div style={{
+                height: `700px`,
+                justifyItems: `center`,
+                justifyContent: `center`,
+                alignItems: `center`,
+                display: `flex`
+            }}>
+                <Content style={{
+                    margin: '0 16px',
+                    //background:`green`,
+                    display: `flex`,
+                    alignItems: `center`,
+                    textAlign: `center`,
+                    justifyContent: `center`,
                 }}
-                style={{
-                    //    backgroundColor:`red`,
-                    width: `400px`,
-                    height: `600px`
-                }}
-                onFinish={handleLoginSubmit}
-            >
-                <Typography.Title
-                    //editable
-                    level={2}
-                    style={{
-                        marginTop: `30px`,
-                    }}
                 >
-                    Login
-                </Typography.Title>
+                    <Form
+                        name="normal_login"
+                        className="login-form"
+                        initialValues={{
+                            remember: true,
+                        }}
+                        style={{
+                            width: `400px`,
+                            //height: `600px`
+                        }}
+                        onFinish={handleLoginSubmit}
+                    >
+                        <Typography.Title
+                            //editable
+                            level={2}
+                            style={{
+                                marginTop: `30px`,
+                            }}
+                        >
+                            Login
+                        </Typography.Title>
 
-                <Form.Item
-                    name="username"
-                    rules={[{ required: true, message: 'Please input your Username!', },]}
-                >
-                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" onChange={({ target }) => setUserName(target.value)} />
-                </Form.Item>
-                <Form.Item
-                    name="password"
-                    rules={[{ required: true, message: 'Please input your Password!', },]}
-                >
-                    <Input
-                        prefix={<LockOutlined className="site-form-item-icon" />}
-                        type="password"
-                        placeholder="Password"
-                        onChange={({ target }) => setPassword(target.value)}
-                    />
-                </Form.Item>
-                <Form.Item>
-                    <Text style={{ color: `red` }} >{errorMensaje}</Text>
-                    <br/>
-                    <Button type="primary" htmlType="submit" className="login-form-button">
-                        Log in
-                    </Button>
-                </Form.Item>
-            </Form>
+                        <Form.Item
+                            name="username"
+                            rules={[{ required: true, message: 'Please input your Username!', },]}
+                        >
+                            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" onChange={({ target }) => setUserName(target.value)} />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: 'Please input your Password!', },]}
+                        >
+                            <Input
+                                prefix={<LockOutlined className="site-form-item-icon" />}
+                                type="password"
+                                placeholder="Password"
+                                onChange={({ target }) => setPassword(target.value)}
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" className="login-form-button">
+                                Log in
+                            </Button>
+                        </Form.Item>
+                    </Form>
 
-        </Content>
+                </Content>
+            </div>
         </>
-
     );
 }
 

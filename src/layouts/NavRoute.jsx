@@ -5,19 +5,17 @@ import NuevoArticulo from '../components/Articulos/NuevoArticulo';
 import ListaArticulos from '../components/Articulos/ListaArticulos';
 import ListaProveedor from '../components/Proveedor/ListaProveedor';
 import ListaInventario from '../components/Inventario/ListaInventario';
-import ListaDetInventario from '../components/Inventario/ListaDetInventario';
-import CrearInventario from '../components/Inventario/CrearInventario';
+import NuevoInventario from '../components/Inventario/NuevoInventario';
 import ListaProductoFinal from '../components/ProductoFinal/ListaProductoFinal';
 import NuevoProductoFinal from '../components/ProductoFinal/NuevoProductoFinal';
-import ListaCliente from '../components/Clientes1/ListaClientes';
-import CrearCliente from '../components/Clientes1/CrearClientes';
-import EditarCliente from '../components/Clientes1/EditarClientes';
 import ListaVenta from '../components/Venta/ListaVenta';
 import ListaDetVenta from '../components/Venta/ListaDetVenta';
 import CrearVenta from '../components/Venta/CrearVenta';
 import AppBar from './AppBar';
 import TableFormat from '../components/TableModel/Table';
 import NuevoProveedor from '../components/Proveedor/NuevoProveedor';
+import ListaCliente from '../components/Cliente/ListaCliente';
+import NuevoCliente from '../components/Cliente/NuevoCliente';
 
 function NavRoute({ usuario }) {
   return (
@@ -46,15 +44,15 @@ function NavRoute({ usuario }) {
                 </>
                 : null
             }
-            #Inventario
-            <Route path='/inventario' element={<ListaInventario token={usuario.token} idsucursal={usuario.body.idsucursal} />} />
-            <Route path='/detinv/:idinventario' element={<ListaDetInventario token={usuario.token} />} />
-            <Route path='/crearinv' element={<CrearInventario token={usuario.token} idsucursal={usuario.body.idsucursal} />} />
-
+            
             #Cliente
             <Route path='/cliente' element={<ListaCliente token={usuario.token} />} />
-            <Route path='/crearcliente' element={<CrearCliente token={usuario.token} />} />
-            <Route path='/editarcliente/:id' element={<EditarCliente idusuario={usuario.body.idusuario} token={usuario.token} />} />
+            <Route path='/crearcliente' element={<NuevoCliente token={usuario.token} />} />
+
+            #Inventario
+            <Route path='/inventario' element={<ListaInventario token={usuario.token} idsucursal={usuario.body.idsucursal} />} />
+            <Route path='/crearinv' element={<NuevoInventario token={usuario.token} idsucursal={usuario.body.idsucursal} />} />
+            
             <Route path='*' element={<Navigate replace to='/' />} />
             #Venta
             <Route path='/venta' element={<ListaVenta token={usuario.token} idusuario={usuario.body.idusuario} />} />

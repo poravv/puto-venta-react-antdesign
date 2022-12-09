@@ -10,13 +10,13 @@ import { Radio, Row, Col, message } from 'antd';
 import { IoTrashOutline } from 'react-icons/io5';
 import Table from 'react-bootstrap/Table';
 
-const URI = 'http://186.158.152.141:3001/sisweb/api/producto_final/';
-const URIRECETA = 'http://186.158.152.141:3001/sisweb/api/receta/';
+const URI = 'http://186.158.152.141:3001/sisweb/api/inventario/';
+const URIRECETA = 'http://186.158.152.141:3001/sisweb/api/det_inventario/';
 const URIARTICULO = 'http://186.158.152.141:3001/sisweb/api/producto/';
 
 //let fechaActual = new Date();
 
-function NuevoProductoFinal({ token, idusuario }) {
+function NuevoInventario({ token, idusuario }) {
 
     //Parte de nuevo registro por modal
     //const strFecha = fechaActual.getFullYear() + "-" + (fechaActual.getMonth() + 1) + "-" + fechaActual.getDate();
@@ -26,7 +26,7 @@ function NuevoProductoFinal({ token, idusuario }) {
     const [tipo_iva, setTipo_iva] = useState(0);
     const navigate = useNavigate();
     const [producto, setProducto] = useState([]);
-    const [tblproducto_finaltmp, setTblProductoFinalTmp] = useState([]);
+    const [tblinventariotmp, setTblInventarioTmp] = useState([]);
     const [cantidad, setCantidad] = useState(0);
     const [total, setTotal] = useState(0);
     const [mensaje, setMensaje] = useState(null);
@@ -72,7 +72,7 @@ function NuevoProductoFinal({ token, idusuario }) {
         2- Buscar si existe un registro de la cabecera por el producto
         3-Insertar cabecera si no existe y actualizar si es que existe
         */
-        if (nombre === "" || descripcion === '' || costo <= 0 || tipo_iva === 0 || tblproducto_finaltmp.length <= 0) {
+        if (nombre === "" || descripcion === '' || costo <= 0 || tipo_iva === 0 || tblinventariotmp.length <= 0) {
             setMensaje('Verificar valores cargados.')
             setTimeout(() => {
                 setMensaje(null)
@@ -98,13 +98,13 @@ function NuevoProductoFinal({ token, idusuario }) {
                 }
                 //Guardado del detalle
                 try {
-                    //console.log(tblproducto_finaltmp.length);
+                    //console.log(tblinventariotmp.length);
 
-                    tblproducto_finaltmp.map((producto) => {
+                    tblinventariotmp.map((producto) => {
 
                         guardarReceta({
-                            idproducto_final: cabecera.data.body.idproducto_final,
-                            receta_estado: 'AC',
+                            idinventario: cabecera.data.body.idinventario,
+                            det_inventario_estado: 'AC',
                             estado: producto.producto.estado,
                             idproducto: producto.producto.idproducto,
                             cantidad: producto.cantidad
@@ -130,10 +130,10 @@ function NuevoProductoFinal({ token, idusuario }) {
     const agregarLista = async (e) => {
         e.preventDefault();
 
-        //console.log(tblproducto_finaltmp)
+        //console.log(tblinventariotmp)
         let validExist;
         try {
-            validExist = tblproducto_finaltmp.filter((inv) => inv.idproducto === articuloSelect.idproducto);
+            validExist = tblinventariotmp.filter((inv) => inv.idproducto === articuloSelect.idproducto);
         } catch (error) {
             setMensaje('Seleccione un producto')
             setTimeout(() => {
@@ -146,7 +146,7 @@ function NuevoProductoFinal({ token, idusuario }) {
             if (cantidad !== 0 && cantidad !== null && cantidad !== '') {
                 if (validExist.length === 0) {
 
-                    tblproducto_finaltmp.push({
+                    tblinventariotmp.push({
                         idproducto: articuloSelect.idproducto,
                         producto: articuloSelect,
                         cantidad: cantidad
@@ -197,9 +197,9 @@ function NuevoProductoFinal({ token, idusuario }) {
     const extraerRegistro = (id, costo) => {
         //console.log('Entra en delete', id);
         setTotal(total - costo);
-        tblproducto_finaltmp.filter(inv => inv.idproducto !== id);
-        const updtblProductoFinal = tblproducto_finaltmp.filter(inv => inv.idproducto !== id);
-        setTblProductoFinalTmp(updtblProductoFinal);
+        tblinventariotmp.filter(inv => inv.idproducto !== id);
+        const updtblInventario = tblinventariotmp.filter(inv => inv.idproducto !== id);
+        setTblInventarioTmp(updtblInventario);
     };
 
     return (
@@ -272,7 +272,7 @@ function NuevoProductoFinal({ token, idusuario }) {
                                 </tr>
                             </thead>
                             <tbody style={{ backgroundColor: `white` }}>
-                                {tblproducto_finaltmp.length !== 0 ? tblproducto_finaltmp.map((inv) => (
+                                {tblinventariotmp.length !== 0 ? tblinventariotmp.map((inv) => (
                                     <tr key={inv.idproducto}>
                                         <td> {inv.producto.descripcion} </td>
                                         <td> {inv.cantidad} </td>
@@ -311,4 +311,4 @@ function NuevoProductoFinal({ token, idusuario }) {
     );
 }
 
-export default NuevoProductoFinal;
+export default NuevoInventario;
