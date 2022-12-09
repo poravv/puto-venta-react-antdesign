@@ -48,9 +48,11 @@ const AppBar = ({ usuario }) => {
         ]),
         getItem(null, 'Team', 'sub2', <TeamOutlined />, [
             getItem(() => navegacion('/cliente'), 'Clientes', '6'),
-            getItem(() => navegacion('/inventario'), 'Inventario', '8')]),
-        getItem(() => navegacion('/buscar'), 'Buscar', '9', <FileOutlined />),
-        getItem(() => Logout(), 'Close session', '10', <LogoutOutlined />)
+            getItem(() => navegacion('/inventario'), 'Inventario', '8'),
+            getItem(() => navegacion('/venta'), 'Pedido venta', '9')
+        ]),
+        getItem(() => navegacion('/buscar'), 'Buscar', '10', <FileOutlined />),
+        getItem(() => Logout(), 'Close session', '11', <LogoutOutlined />)
     ];
 
 

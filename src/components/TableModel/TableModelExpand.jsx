@@ -116,8 +116,8 @@ function TableModelExpand({ token, form, data, mergedColumns, keyExtraido,column
             dataSource={data}
             columns={mergedColumns}
             expandedRowRender = {(record) => (
-                //console.log('det: -',record.det_inventarios);
-                expandedRowRender(record.receta??record.det_inventarios)
+                //console.log('det: -',record)
+                expandedRowRender(record.receta??record.det_inventarios??record.det_venta)
             )}
             rowClassName="editable-row"
             scroll={{

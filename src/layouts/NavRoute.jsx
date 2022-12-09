@@ -9,8 +9,7 @@ import NuevoInventario from '../components/Inventario/NuevoInventario';
 import ListaProductoFinal from '../components/ProductoFinal/ListaProductoFinal';
 import NuevoProductoFinal from '../components/ProductoFinal/NuevoProductoFinal';
 import ListaVenta from '../components/Venta/ListaVenta';
-import ListaDetVenta from '../components/Venta/ListaDetVenta';
-import CrearVenta from '../components/Venta/CrearVenta';
+import NuevaVenta from '../components/Venta/NuevaVenta';
 import AppBar from './AppBar';
 import TableFormat from '../components/TableModel/Table';
 import NuevoProveedor from '../components/Proveedor/NuevoProveedor';
@@ -56,8 +55,7 @@ function NavRoute({ usuario }) {
             <Route path='*' element={<Navigate replace to='/' />} />
             #Venta
             <Route path='/venta' element={<ListaVenta token={usuario.token} idusuario={usuario.body.idusuario} />} />
-            <Route path='/detventa/:idventa' element={<ListaDetVenta token={usuario.token} />} />
-            <Route path='/crearventa' element={<CrearVenta token={usuario.token} idusuario={usuario.body.idusuario} idsucursal={usuario.body.idsucursal} />} />
+            <Route path='/crearventa' element={<NuevaVenta token={usuario.token} idusuario={usuario.body.idusuario} idsucursal={usuario.body.idsucursal} />} />
             #Table model
             <Route path='/tablemodel' element={<TableFormat title={'Formato'}/>} />
           </Route>
