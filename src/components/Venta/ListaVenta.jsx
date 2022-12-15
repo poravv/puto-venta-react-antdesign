@@ -13,9 +13,9 @@ import Highlighter from 'react-highlight-words';
 import { useNavigate } from "react-router-dom";
 import { RiFileExcel2Line, RiFilePdfFill } from "react-icons/ri";
 
-const URI = 'http://186.158.152.141:3001/sisweb/api/venta/';
+const URI = 'http://186.158.152.141:3001/sisweb/api/venta';
 let fechaActual = new Date();
-const ListaVenta = ({ token }) => {
+const ListaVenta = ({ token,idusuario }) => {
 
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
@@ -42,7 +42,7 @@ const ListaVenta = ({ token }) => {
 
 
     const getVentas = async () => {
-        const res = await axios.get(`${URI}/get`, config)
+        const res = await axios.get(`${URI}/getvenusu/${idusuario}`, config)
         /*En caso de que de error en el server direcciona a login*/
         if (res.data.error) {
             Logout();
@@ -146,8 +146,8 @@ const ListaVenta = ({ token }) => {
     });
 
 
-    const deleteVenta = async (id) => {
-        await axios.put(`${URI}/inactiva/${id}`, {}, config);
+    const deleteVenta = async (idventa,idusuario) => {
+        await axios.put(`${URI}/inactiva/`, {idventa,idusuario}, config);
         getVentas();
     }
 
@@ -160,7 +160,7 @@ const ListaVenta = ({ token }) => {
     const updateVentaFinal = async (newData) => {
         //console.log('Entra en update');
         //console.log(newData)
-        await axios.put(URI + "put/" + newData.idventa, newData, config
+        await axios.put(URI + "/put/" + newData.idventa, newData, config
         );
         getVentas();
     }
@@ -225,7 +225,7 @@ const ListaVenta = ({ token }) => {
         },
         {
             title: 'Iva',
-            dataIndex: 'iva',
+            dataIndex: 'iva_total',
             width: '8%',
             editable: false,
         },
@@ -268,9 +268,6 @@ const ListaVenta = ({ token }) => {
                     </span>
                 ) : (
                     <>
-                        <Typography.Link style={{ margin: `5px` }} disabled={editingKey !== ''} onClick={() => edit(record)}>
-                            Editar
-                        </Typography.Link>
                         <Popconfirm
                             title="Desea eliminar este registro?"
                             onConfirm={() => confirmDel(record.idventa)}
@@ -354,14 +351,6 @@ const ListaVenta = ({ token }) => {
     ];
 
 
-    const edit = (record) => {
-        form.setFieldsValue({
-            ...record,
-        });
-        setEditingKey(record.idventa);
-    };
-
-
     const isEditing = (record) => record.idventa === editingKey;
 
     const cancel = () => {
@@ -371,7 +360,7 @@ const ListaVenta = ({ token }) => {
     const confirmDel = (idventa) => {
         message.success('Procesando');
         //deleteVentaFinal(idventa);
-        deleteVenta(idventa)
+        deleteVenta(idventa,idusuario)
     };
 
     const save = async (idventa, record) => {

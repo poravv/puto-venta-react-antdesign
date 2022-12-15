@@ -13,10 +13,11 @@ import Highlighter from 'react-highlight-words';
 import { useNavigate } from "react-router-dom";
 import { RiFileExcel2Line, RiFilePdfFill } from "react-icons/ri";
 
-
 const URI = 'http://186.158.152.141:3001/sisweb/api/inventario';
 let fechaActual = new Date();
-const ListaInventario = ({ token }) => {
+const ListaInventario = ({ token,idsucursal }) => {
+
+    //console.log('idsuc: ',idsucursal)
 
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
@@ -52,13 +53,12 @@ const ListaInventario = ({ token }) => {
    */
 
     const getInventario = async () => {
-        const res = await axios.get(`${URI}/get`, config)
+        const res = await axios.get(URI + `/getinvsuc/${idsucursal}`, config)
+        setData(res.data.body);
         /*En caso de que de error en el server direcciona a login*/
-        if (res.data.error) {
+        if(res.data.error){
             Logout();
         }
-        //console.log(res.data.body);
-        setData(res.data.body);
     }
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -156,9 +156,13 @@ const ListaInventario = ({ token }) => {
     });
 
 
-    const deleteProducto = async (id) => {
-        await axios.put(`${URI}/inactiva/${id}`, {}, config);
-        getInventario();
+    const deleteDetInventario = async (iddet_inventario,cantidad,idinventario) => {
+        try {
+            await axios.put(`${URI}/inactiva/${iddet_inventario}`,{estado:'IN',cantidad:cantidad,idinventario:idinventario}, config);
+        } catch (error) {
+            console.log(error)
+        }
+        //getDetInventario();
     }
 
     const handleExport = () => {
@@ -247,7 +251,7 @@ const ListaInventario = ({ token }) => {
                         </Typography.Link>
                         <Popconfirm
                             title="Desea eliminar este registro?"
-                            onConfirm={() => confirmDel(record.idinventario)}
+                            onConfirm={() => confirmDel(record.iddet_inventario,record.cantidad,record.idinventario)}
                             onCancel={cancel}
                             okText="Yes"
                             cancelText="No" >
@@ -316,10 +320,11 @@ const ListaInventario = ({ token }) => {
         setEditingKey('');
     };
 
-    const confirmDel = (idinventario) => {
+    const confirmDel = (iddet_inventario,cantidad,idinventario) => {
         message.success('Procesando');
         //deleteInventario(idinventario);
-        deleteProducto(idinventario)
+        //deleteProducto(idinventario)
+        deleteDetInventario(iddet_inventario,cantidad,idinventario)
     };
 
     const save = async (idinventario, record) => {
@@ -386,7 +391,7 @@ const ListaInventario = ({ token }) => {
             <Button type='primary' style={{ backgroundColor: `#08AF17`, margin: `2px` }}  ><RiFileExcel2Line onClick={handleExport} size={20} /></Button>
             <Button type='primary' style={{ backgroundColor: `#E94325`, margin: `2px` }}  ><RiFilePdfFill size={20} /></Button>
             <div style={{ marginBottom: `5px`, textAlign: `end` }}>
-                <Button type="primary" onClick={() => navigate('/crearproducto')} >{<PlusOutlined />} Cargar</Button>
+                <Button type="primary" onClick={() => navigate('/crearinv')} >{<PlusOutlined />} Cargar</Button>
             </div>
             <TableModelExpand columnDet={columnDet} keyDet={'iddet_inventario'} token={token} mergedColumns={mergedColumns} data={data} form={form} keyExtraido={'idinventario'} />
         </>

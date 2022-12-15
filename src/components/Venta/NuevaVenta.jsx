@@ -9,10 +9,10 @@ import { Row, Col, message } from 'antd';
 import { IoTrashOutline } from 'react-icons/io5';
 import Table from 'react-bootstrap/Table';
 
-const URI = 'http://186.158.152.141:3001/sisweb/api/venta/';
-const URIINVDET = 'http://186.158.152.141:3001/sisweb/api/detventa/';
-const URIPRODUCTO = 'http://186.158.152.141:3001/sisweb/api/producto_final/';
-const URICLI = 'http://186.158.152.141:3001/sisweb/api/cliente/';
+const URI = 'http://186.158.152.141:3001/sisweb/api/venta';
+const URIINVDET = 'http://186.158.152.141:3001/sisweb/api/detventa';
+const URIPRODUCTO = 'http://186.158.152.141:3001/sisweb/api/producto_final';
+const URICLI = 'http://186.158.152.141:3001/sisweb/api/cliente';
 
 let fechaActual = new Date();
 
@@ -26,7 +26,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
     const [totalIva, setTotalIva] = useState(0);
     const [descuento, setDescuento] = useState(0);
     const [productoSelect, setProductoSelect] = useState(0);
-    const [idcliente, setIdCliente] = useState(0);
+    const [cliente, setCliente] = useState(0);
     const navigate = useNavigate();
     const [lstProducto, setLstProducto] = useState([]);
     const [lstClientes, setLstClientes] = useState([]);
@@ -46,39 +46,41 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
     };
 
     const getProductos = async () => {
-        const res = await axios.get(`${URIPRODUCTO}get`, config);
+        const res = await axios.get(`${URIPRODUCTO}/productoventa/${idsucursal}`, config);
+        //console.log(res.data.body);
         setLstProducto(res.data.body);
     }
 
     const getClientes = async () => {
-        const res = await axios.get(`${URICLI}get`, config);
+        const res = await axios.get(`${URICLI}/get`, config);
         setLstClientes(res.data.body);
     }
 
     const verificaproceso = async () => {
-        return await axios.post(URI + `verificaproceso/${idusuario}-inventario`, {}, config);
+        return await axios.post(URI + `/verificaproceso/${idusuario}-inventario`, {}, config);
     }
 
     const guardaCab = async (valores) => {
-        return await axios.post(URI + "post/", valores, config);
+        return await axios.post(URI + "/post/", valores, config);
     }
 
     const guardaDetalle = async (valores) => {
-        await axios.post(URIINVDET + "post/", valores, config);
+        await axios.post(URIINVDET + "/post/", valores, config);
     }
     const operacionVenta = async (idproducto_final) => {
         //console.log(idproducto_final,'-',idusuario,'-',0);
-        return await axios.post(URI + `operacionventa/${idproducto_final}-procesado-${idusuario}-0`, {}, config);
+        return await axios.post(URI + `/operacionventa/${idproducto_final}-procesado-${idusuario}-0`, {}, config);
     }
 
 
     //procedimiento para actualizar
     const gestionGuardado = async () => {
+        //e.preventDefault();
         try {
             guardaCab(
                 {
                     idusuario: idusuario,
-                    idcliente: idcliente,
+                    idcliente: cliente.idcliente,
                     estado: 'AC',
                     fecha: strFecha,
                     iva_total: totalIva,
@@ -88,6 +90,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                 }
             ).then((cabecera) => {
                 try {
+                    console.log(cabecera);
                     //console.log('Entra en guarda detalle')
                     //Guardado del detalle
                     tblventatmp.map((venta) => {
@@ -102,6 +105,8 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                         operacionVenta(venta.producto_final.idproducto_final);
                         return null;
                     });
+                    
+                    message.success('Registro almacenado');
 
                 } catch (error) {
                     console.log(error);
@@ -110,7 +115,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                 }
                 navigate('/venta');
             });
-            message.success('Registro almacenado');
+            
         } catch (e) {
             console.log(e);
             message.error('Error en la creacion');
@@ -120,8 +125,9 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
     }
 
     const agregarLista = async (e) => {
-
         e.preventDefault();
+        
+        //console.log(productoSelect);
 
         //Validacion de existencia del producto dentro de la lista 
         //const productoSelect = lstProducto.filter((inv) => inv.idproducto_final === idproductoSelect);
@@ -132,7 +138,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                 if (validExist.length === 0) {
 
                     //La idea es hacer que en el server se haga el calculo de si existe o no el stock por el producto
-                    console.log(productoSelect.obs);
+                    //console.log(productoSelect.obs);
                     if (productoSelect.obs !== 'STOCK') {
                         message.warning('No hay stock para este producto');
                         return;
@@ -144,7 +150,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                     if (parseInt(cantidad) <= parseInt(productoSelect.cant_prod_posible)) {
 
                         try {
-                            await axios.post(URI + `operacionventa/${productoSelect.idproducto_final}-venta-${idusuario}-${cantidad}`, {}, config);
+                            await axios.post(URI + `/operacionventa/${productoSelect.idproducto_final}-venta-${idusuario}-${cantidad}`, {}, config);
                         } catch (error) {
                             console.log('Error: ', error);
                         }
@@ -158,9 +164,12 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                             cantidad: cantidad,
                             descuento: descuento
                         });
+                        //console.log('total: ',total + (cantidad * productoSelect.costo) - descuento);
+                        //console.log(cantidad * ((productoSelect.costo*productoSelect.tipo_iva)/100))
+                        //console.log('totalIva: ',totalIva + (cantidad * ((productoSelect.costo*productoSelect.tipo_iva)/100)));
 
-                        setTotal(total + (cantidad * productoSelect.costo) - descuento);
-                        setTotalIva(totalIva + (cantidad * productoSelect.monto_iva));
+                        setTotal(parseInt(total + (cantidad * productoSelect.costo) - descuento));
+                        setTotalIva(parseInt(totalIva + (cantidad * (productoSelect.costo*productoSelect.tipo_iva/100))));
 
                     } else {
                         message.warning('No hay stock para la cantidad requerida');
@@ -179,12 +188,14 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
 
     const btnCancelar = (e) => {
         e.preventDefault();
-        navigate('/producto');
+        navigate('/venta');
     }
 
     const onChangeProducto = (value) => {
-
+        //console.log(value);
+        //console.log(lstProducto);
         lstProducto.find((element) => {
+            
             if (element.idproducto_final === value) {
                 //console.log(element);
                 setProductoSelect(element)
@@ -200,7 +211,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
         lstClientes.find((element) => {
             if (element.idcliente === value) {
                 //console.log(element);
-                setIdCliente(element)
+                setCliente(element)
                 return true;
             } else {
                 return false;
@@ -212,15 +223,14 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
         console.log('search:', value);
     };
 
-    const extraerRegistro = async (id, costo, monto_iva) => {
-
-        //console.log('Entra en delete', id);
-
+    const extraerRegistro = async (e,id, costo, monto_iva) => {
+        e.preventDefault();
+        //console.log('Datos: ',costo,monto_iva)
         const updtblVenta = tblventatmp.filter(inv => inv.idproducto_final !== id);
         setTblVentaTmp(updtblVenta);
 
         try {
-            await axios.post(URI + `operacionventa/${id}-retorno-${idusuario}-0`, {}, config);
+            await axios.post(URI + `/operacionventa/${id}-retorno-${idusuario}-0`, {}, config);
         } catch (error) {
             console.log('Error: ', error);
         }
@@ -243,21 +253,16 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                     autoComplete="off">
                     <Row style={{ justifyContent: `center` }}>
                         <Col style={{ marginLeft: `15px` }}>
-                            <Buscador label={'cliente'} title={'Cliente'} value={'idcliente'} data={lstClientes} onChange={onChangeCliente} onSearch={onSearch} />
+                            <Buscador label={'razon_social'} title={'Cliente'} value={'idcliente'} data={lstClientes} onChange={onChangeCliente} onSearch={onSearch} />
                         </Col>
                     </Row>
 
 
                     <Row style={{ justifyContent: `center`, margin: `10px` }}>
                         <Col style={{ marginLeft: `15px` }}>
-                            <Buscador label={'nombre'} title={'Producto'} value={'idproducto'} data={lstProducto} onChange={onChangeProducto} onSearch={onSearch} />
+                            <Buscador label={'nombre'} title={'Producto'} value={'idproducto_final'} data={lstProducto} onChange={onChangeProducto} onSearch={onSearch} />
                         </Col>
                         <Col style={{ marginLeft: `15px` }}>
-                            <Form.Item name="cantidad" rules={[{ required: true, message: 'Cargue cantidad', },]}>
-                                <Input type='number' placeholder='Cantidad' value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
-                            </Form.Item>
-                        </Col>
-                        <Col>
                             <Form.Item name="cantidad" rules={[{ required: true, message: 'Cargue cantidad', },]}>
                                 <Input type='number' placeholder='Cantidad' value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
                             </Form.Item>
@@ -274,7 +279,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                         </Col>
                     </Row>
                     <div style={{ alignItems: `center`, justifyContent: `center`, margin: `0px`, display: `flex` }}>
-                        <Table striped bordered hover>
+                        <Table striped bordered hover style={{ backgroundColor:`white` }}>
                             <thead className='table-primary'>
                                 <tr>
                                     <th>Producto</th>
@@ -296,11 +301,11 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                                         <td> {inv.cantidad} </td>
                                         <td> {inv.descuento} </td>
                                         <td> {inv.producto_final.tipo_iva + '%'} </td>
-                                        <td> {inv.producto_final.monto_iva} </td>
-                                        <td> {inv.producto_final.monto_iva * inv.cantidad} </td>
+                                        <td> {inv.producto_final.costo*inv.producto_final.tipo_iva/100} </td>
+                                        <td> {(inv.producto_final.costo*inv.producto_final.tipo_iva/100) * inv.cantidad} </td>
                                         <td> {inv.producto_final.costo * inv.cantidad} </td>
                                         <td>
-                                            <button onClick={() => extraerRegistro(inv.idproducto_final, (inv.producto_final.costo - descuento), inv.producto_final.monto_iva)} className='btn btn-danger'><IoTrashOutline /></button>
+                                            <button onClick={(e) => extraerRegistro(e,inv.idproducto_final, (inv.producto_final.costo - descuento), parseInt((inv.producto_final.costo*inv.producto_final.tipo_iva)/100))} className='btn btn-danger'><IoTrashOutline /></button>
                                         </td>
                                     </tr>
                                 )) : null
@@ -316,7 +321,7 @@ function NuevaVenta({ token, idusuario, idsucursal }) {
                                 <tr>
                                     <th>Total iva</th>
                                     <th style={{ textAlign: `start` }} colSpan={7}>
-                                        <b>{totalIva}</b>
+                                        <b>{parseInt(totalIva) ?? 0}</b>
                                     </th>
                                 </tr>
                             </tfoot>
